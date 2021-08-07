@@ -1,0 +1,3 @@
+- CLU is apparently completely case-insensitive
+- Const type params
+- selector/applytype decls

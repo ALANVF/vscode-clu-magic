@@ -1,0 +1,59 @@
+{
+	"name": "language-clu",
+	"displayName": "CLU programming language",
+	"description": "Syntax highlighting for the CLU programming language",
+	"version": "0.1.0",
+	"publisher": "theangryepicbanana",
+	"engines": {
+		"vscode": "^1.30.0"
+	},
+	"categories": [
+		"Programming Languages"
+	],
+	"keywords": [
+		"CLU",
+		"CLU language"
+	],
+	"activationEvents": [
+		"onLanguage:clu"
+	],
+	"main": "./out/extension",
+	"contributes": {
+		"languages": [
+			{
+				"id": "clu",
+				"aliases": [
+					"CLU",
+					"clu"
+				],
+				"extensions": [
+					".clu",
+					".equ",
+					".spc"
+				],
+				"configuration": "./clu.configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "clu",
+				"scopeName": "source.clu",
+				"path": "./syntaxes/clu.json"
+			}
+		]
+	},
+	"scripts": {
+		"compile-syntax": "reon-convert to-json syntaxes/clu.reon",
+		"compile-config": "reon-convert to-json clu.configuration.reon",
+		"compile-ts": "tsc -p ./"
+	},
+	"dependencies": {
+		"@types/vscode": "1.14.0",
+		"vscode-languageclient": "6.1.3"
+	},
+	"devDependencies": {
+		"@types/node": "12.12.2",
+		"reon-convert": "^0.1.16",
+		"typescript": "^4.1.3"
+	}
+}

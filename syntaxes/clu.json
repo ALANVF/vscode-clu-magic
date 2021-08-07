@@ -1,0 +1,2400 @@
+{
+	"name": "CLU",
+	"scopeName": "source.clu",
+	"fileTypes": ["clu", "equ", "spc"],
+	"patterns": [
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#top-level"
+		}
+	],
+	"repository": {
+		"comments": {
+			"begin": "%",
+			"end": "$",
+			"name": "comment.line.clu"
+		},
+		"comma": {
+			"match": ",",
+			"name": "punctuation.separator.clu"
+		},
+		"operators": {
+			"match": "~?[<>]=?|[+\\-]|\\*{1,2}|/{1,2}|[=:~]=|[~=]|&{1,2}|\\|{1,2}|\\b(?:cand|cor)\\b",
+			"name": "keyword.operator.clu"
+		},
+		"ident.var": {
+			"match": "\\b[a-zA-Z_]\\w*\\b",
+			"name": "variable.clu"
+		},
+		"ident.type": {
+			"match": "\\b[a-zA-Z_]\\w*\\b",
+			"name": "entity.name.type.clu"
+		},
+		"ident.const": {
+			"match": "\\b[a-zA-Z_]\\w*\\b",
+			"name": "constant.clu"
+		},
+		"ident.proc": {
+			"match": "\\b[a-zA-Z_]\\w*\\b",
+			"name": "entity.name.function.clu"
+		},
+		"basic-expr.number": {
+			"patterns": [
+				{
+					"match": "(?:\\b|(?<=[\\s(\\[{,])[+-])\\d+(?:\\.\\d*)?(?:[eE][+-]\\d+)?",
+					"name": "constant.numeric.clu"
+				},
+				{
+					"match": "(?:(?<=[\\s(\\[{,])[+-])?\\.\\d+(?:[eE][+-]\\d+)?",
+					"name": "constant.numeric.clu"
+				}
+			]
+		},
+		"escapes": {
+			"patterns": [
+				{
+					"match": "\\\\[\\\\'\"ntbprv]",
+					"name": "constant.escape.clu"
+				},
+				{
+					"match": "\\\\\\d{3}",
+					"name": "constant.escape.clu"
+				},
+				{
+					"match": "\\\\\\^[@a-zA-Z\\[\\]\\\\^_?]",
+					"name": "constant.escape.clu"
+				}
+			]
+		},
+		"basic-expr.char": {
+			"begin": "'",
+			"end": "'",
+			"name": "string.character.clu",
+			"patterns": [
+				{
+					"include": "#escapes"
+				}
+			]
+		},
+		"basic-expr.string": {
+			"begin": "\"",
+			"end": "\"",
+			"name": "string.clu",
+			"patterns": [
+				{
+					"include": "#escapes"
+				}
+			]
+		},
+		"basic-expr.bool": {
+			"match": "(?i)\\b(true|false)\\b",
+			"name": "constant.language.clu"
+		},
+		"basic-expr.nil": {
+			"match": "(?i)\\bnil\\b",
+			"name": "constant.language.clu"
+		},
+		"basic-expr": {
+			"patterns": [
+				{
+					"include": "#basic-expr.number"
+				},
+				{
+					"include": "#basic-expr.char"
+				},
+				{
+					"include": "#basic-expr.string"
+				},
+				{
+					"include": "#basic-expr.bool"
+				},
+				{
+					"include": "#basic-expr.nil"
+				}
+			]
+		},
+		"expr.array-ctor": {
+			"begin": "\\b([a-zA-Z_]\\w*(?:\\[(?:(?!\\]\\s*(?:[(\\[$\\.+\\-*/&|~=><;]|:=)|\\b(?i:then|do|else(?:if)?|end|except|tag|when|others|cand|cor)\\b).)+\\])?)(\\$)(\\[)",
+			"beginCaptures": {
+				"1": {
+					"patterns": [
+						{
+							"include": "#types"
+						}
+					]
+				},
+				"2": {
+					"name": "keyword.operator.clu"
+				},
+				"3": {
+					"name": "punctuation.section.array.begin.clu"
+				}
+			},
+			"end": "\\]",
+			"endCaptures": [
+				{
+					"name": "punctuation.section.array.end.clu"
+				}
+			],
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"begin": ":(?!=)",
+					"beginCaptures": [
+						{
+							"name": "keyword.operator.clu"
+						}
+					],
+					"end": "(?=\\])",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#comma"
+						},
+						{
+							"include": "#expr"
+						}
+					]
+				},
+				{
+					"begin": ",",
+					"end": "(?=\\])",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#comma"
+						},
+						{
+							"include": "#expr"
+						}
+					]
+				},
+				{
+					"include": "#expr"
+				}
+			]
+		},
+		"expr.record-ctor": {
+			"begin": "\\b([a-zA-Z_]\\w*(?:\\[(?:(?!\\]\\s*(?:[(\\[$\\.+\\-*/&|~=><;]|:=)|\\b(?i:then|do|else(?:if)?|end|except|tag|when|others|cand|cor)\\b).)+\\])?)(\\$)(\\{)",
+			"beginCaptures": {
+				"1": {
+					"patterns": [
+						{
+							"include": "#types"
+						}
+					]
+				},
+				"2": {
+					"name": "keyword.operator.clu"
+				},
+				"3": {
+					"name": "punctuation.section.record.begin.clu"
+				}
+			},
+			"end": "\\}",
+			"endCaptures": [
+				{
+					"name": "punctuation.section.record.end.clu"
+				}
+			],
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"begin": "\\b[a-zA-Z_]\\w*\\b",
+					"beginCaptures": [
+						{
+							"name": "variable.clu"
+						}
+					],
+					"end": "(?i)(?=\\})|(?!\\s|,|:)",
+					"patterns": [
+						{
+							"begin": ",",
+							"end": "(?<=\\w)",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"include": "#ident.var"
+								}
+							]
+						},
+						{
+							"begin": ":",
+							"beginCaptures": [
+								{
+									"name": "keyword.operator.clu"
+								}
+							],
+							"end": "(?i)(?=,|\\})",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"include": "#expr"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		"expr.func": {
+			"patterns": [
+				{
+					"begin": "\\b([a-zA-Z_]\\w*)\\s*(\\()",
+					"beginCaptures": {
+						"1": {
+							"patterns": [
+								{
+									"match": "(?i)\\b(up|down)\\b",
+									"name": "keyword.clu"
+								},
+								{
+									"match": "\\w+",
+									"name": "entity.name.function.clu"
+								}
+							]
+						},
+						"2": {
+							"name": "punctuation.section.args.begin.clu"
+						}
+					},
+					"end": "\\)",
+					"endCaptures": [
+						{
+							"name": "punctuation.section.args.end.clu"
+						}
+					],
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#comma"
+						},
+						{
+							"include": "#expr"
+						}
+					]
+				},
+				{
+					"begin": "\\b([a-zA-Z_]\\w*)\\s*(\\[)((?:(?!\\]\\s*(?:[(\\[$\\.+\\-*/&|~=><;]|:=)|\\b(?i:then|do|else(?:if)?|end|except|tag|when|others|cand|cor)\\b).)+)(\\])\\s*(\\()",
+					"beginCaptures": {
+						"1": {
+							"patterns": [
+								{
+									"match": "(?i)\\bforce\\b",
+									"name": "keyword.clu"
+								},
+								{
+									"match": "\\w+",
+									"name": "entity.name.function.clu"
+								}
+							]
+						},
+						"3": {
+							"patterns": [
+								{
+									"include": "#types"
+								}
+							]
+						},
+						"5": {
+							"name": "punctuation.section.args.begin.clu"
+						}
+					},
+					"end": "\\)",
+					"endCaptures": [
+						{
+							"name": "punctuation.section.args.end.clu"
+						}
+					],
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#comma"
+						},
+						{
+							"include": "#expr"
+						}
+					]
+				}
+			]
+		},
+		"expr.method": {
+			"patterns": [
+				{
+					"begin": "\\b([a-zA-Z_]\\w*(?:\\[(?:(?!\\]\\s*(?:[(\\[$\\.+\\-*/&|~=><;]|:=)|\\b(?i:then|do|else(?:if)?|end|except|tag|when|others|cand|cor)\\b).)+\\])?)(\\$)([a-zA-Z_]\\w*)\\s*(\\[)",
+					"beginCaptures": {
+						"1": {
+							"patterns": [
+								{
+									"include": "#types"
+								}
+							]
+						},
+						"2": {
+							"name": "keyword.operator.clu"
+						},
+						"3": {
+							"name": "entity.name.function.clu"
+						},
+						"4": {
+							"name": "punctuation.section.args.begin.clu"
+						}
+					},
+					"end": "(?<=\\))|(?<=\\])(?!\\s*\\()",
+					"endCaptures": [
+						{
+							"name": "punctuation.section.args.end.clu"
+						}
+					],
+					"patterns": [
+						{
+							"begin": "(\\])\\s*(\\()",
+							"beginCaptures": {
+								"1": {
+									"name": "punctuation.section.args.end.clu"
+								},
+								"2": {
+									"name": "punctuation.section.args.begin.clu"
+								}
+							},
+							"end": "(?=\\))",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"include": "#comma"
+								},
+								{
+									"include": "#expr"
+								}
+							]
+						},
+						{
+							"match": "\\](?!\\s*\\()",
+							"name": "punctuation.section.args.end.clu"
+						},
+						{
+							"include": "#types"
+						}
+					]
+				},
+				{
+					"begin": "\\b([a-zA-Z_]\\w*(?:\\[(?:(?!\\]\\s*(?:[(\\[$\\.+\\-*/&|~=><;]|:=)|\\b(?i:then|do|else(?:if)?|end|except|tag|when|others|cand|cor)\\b).)+\\])?)(\\$)([a-zA-Z_]\\w*)\\s*(\\()",
+					"beginCaptures": {
+						"1": {
+							"patterns": [
+								{
+									"include": "#types"
+								}
+							]
+						},
+						"2": {
+							"name": "keyword.operator.clu"
+						},
+						"3": {
+							"name": "entity.name.function.clu"
+						},
+						"4": {
+							"name": "punctuation.section.args.begin.clu"
+						}
+					},
+					"end": "\\)",
+					"endCaptures": [
+						{
+							"name": "punctuation.section.args.end.clu"
+						}
+					],
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#comma"
+						},
+						{
+							"include": "#expr"
+						}
+					]
+				},
+				{
+					"match": "\\b([a-zA-Z_]\\w*(?:\\[(?:(?!\\]\\s*(?:[(\\[$\\.+\\-*/&|~=><;]|:=)|\\b(?i:then|do|else(?:if)?|end|except|tag|when|others|cand|cor)\\b).)+\\])?)(\\$)([a-zA-Z_]\\w*)\\b",
+					"captures": {
+						"1": {
+							"patterns": [
+								{
+									"include": "#types"
+								}
+							]
+						},
+						"2": {
+							"name": "keyword.operator.clu"
+						},
+						"3": {
+							"name": "entity.name.function.clu"
+						},
+						"4": {
+							"name": "punctuation.section.args.begin.clu"
+						}
+					}
+				}
+			]
+		},
+		"expr.get-member": {
+			"match": "(\\.)([a-zA-Z_]\\w*)\\b",
+			"captures": {
+				"1": {
+					"name": "keyword.operator.clu"
+				},
+				"2": {
+					"name": "variable.property.clu"
+				}
+			}
+		},
+		"expr": {
+			"patterns": [
+				{
+					"include": "#basic-expr"
+				},
+				{
+					"include": "#expr.array-ctor"
+				},
+				{
+					"include": "#expr.record-ctor"
+				},
+				{
+					"include": "#expr.func"
+				},
+				{
+					"include": "#expr.method"
+				},
+				{
+					"include": "#expr.get-member"
+				},
+				{
+					"include": "#operators"
+				},
+				{
+					"begin": "\\(",
+					"end": "\\)",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#expr"
+						}
+					]
+				}
+			]
+		},
+		"statement.var-decl": {
+			"begin": "(?i)(?<!\\btag\\s+|\\bwhen\\s+|\\bhas\\s+|\\bfor\\s+)\\b([a-zA-Z_]\\w*)(?=(?:\\s*,\\s*[a-zA-Z_]\\w*)*\\s*:)",
+			"beginCaptures": [
+				{
+					"name": "variable.clu"
+				}
+			],
+			"end": "(?=$|:=|;)|(?!\\s|,|:)",
+			"patterns": [
+				{
+					"begin": ",",
+					"end": "(?<=\\w)",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#ident.var"
+						}
+					]
+				},
+				{
+					"begin": ":(?!=)",
+					"beginCaptures": [
+						{
+							"name": "keyword.operator.clu"
+						}
+					],
+					"end": "(?=$|:=|,|;)",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#types"
+						}
+					]
+				}
+			]
+		},
+		"statement": {
+			"patterns": [
+				{
+					"include": "#statement.var-decl"
+				},
+				{
+					"include": "#~block"
+				},
+				{
+					"include": "#~if"
+				},
+				{
+					"include": "#~while"
+				},
+				{
+					"include": "#~for"
+				},
+				{
+					"include": "#~tagcase"
+				},
+				{
+					"include": "#~except"
+				},
+				{
+					"begin": "(?i)\\b(return|yield)\\s*(\\()",
+					"beginCaptures": {
+						"1": {
+							"name": "keyword.clu"
+						}
+					},
+					"end": "\\)",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#comma"
+						},
+						{
+							"include": "#expr"
+						}
+					]
+				},
+				{
+					"match": "(?i)\\b(continue|break|return|yield)\\b",
+					"name": "keyword.clu"
+				},
+				{
+					"begin": "(?i)\\b(signal|exit)\\s+([a-zA-Z_]\\w*)\\s*(\\()",
+					"beginCaptures": {
+						"1": {
+							"name": "keyword.clu"
+						},
+						"2": {
+							"name": "entity.name.type.clu"
+						}
+					},
+					"end": "\\)",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#comma"
+						},
+						{
+							"include": "#expr"
+						}
+					]
+				},
+				{
+					"match": "(?i)\\b(signal|exit)\\s+([a-zA-Z_]\\w*)\\b",
+					"captures": {
+						"1": {
+							"name": "keyword.clu"
+						},
+						"2": {
+							"name": "entity.name.type.clu"
+						}
+					}
+				},
+				{
+					"begin": "(?i)\\b(resignal)\\s+([a-zA-Z_]\\w*)\\b",
+					"beginCaptures": {
+						"1": {
+							"name": "keyword.clu"
+						},
+						"2": {
+							"name": "entity.name.type.clu"
+						}
+					},
+					"end": "(?!\\s|,)",
+					"patterns": [
+						{
+							"begin": ",",
+							"end": "(?<=\\w)",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"include": "#ident.type"
+								}
+							]
+						}
+					]
+				},
+				{
+					"begin": "(?i)\\bown\\b",
+					"beginCaptures": [
+						{
+							"name": "keyword.clu"
+						}
+					],
+					"end": "(?=$|:=|;)",
+					"patterns": [
+						{
+							"include": "#statement.var-decl"
+						}
+					]
+				},
+				{
+					"include": "#equate"
+				},
+				{
+					"include": "#expr"
+				}
+			],
+			"repository": {
+				"~block": {
+					"begin": "(?i)\\bbegin\\b",
+					"beginCaptures": [
+						{
+							"name": "keyword.clu"
+						}
+					],
+					"end": "(?i)\\bend\\b",
+					"endCaptures": [
+						{
+							"name": "keyword.clu"
+						}
+					],
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#statement"
+						}
+					]
+				},
+				"~if": {
+					"begin": "(?i)\\bif\\b",
+					"beginCaptures": [
+						{
+							"name": "keyword.clu"
+						}
+					],
+					"end": "(?i)\\bend\\b",
+					"endCaptures": [
+						{
+							"name": "keyword.clu"
+						}
+					],
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"begin": "(?i)\\bthen\\b",
+							"beginCaptures": [
+								{
+									"name": "keyword.clu"
+								}
+							],
+							"end": "(?i)(?=end\\b)",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"begin": "(?i)\\belseif\\b",
+									"beginCaptures": [
+										{
+											"name": "keyword.clu"
+										}
+									],
+									"end": "(?i)(?=(?:elseif|else|end)\\b)",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"begin": "(?i)\\bthen\\b",
+											"beginCaptures": [
+												{
+													"name": "keyword.clu"
+												}
+											],
+											"end": "(?i)(?=(?:elseif|else|end)\\b)",
+											"patterns": [
+												{
+													"include": "#comments"
+												},
+												{
+													"include": "#statement"
+												}
+											]
+										},
+										{
+											"include": "#expr"
+										}
+									]
+								},
+								{
+									"begin": "(?i)\\belse\\b",
+									"beginCaptures": [
+										{
+											"name": "keyword.clu"
+										}
+									],
+									"end": "(?i)(?=end\\b)",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"include": "#statement"
+										}
+									]
+								},
+								{
+									"include": "#statement"
+								}
+							]
+						},
+						{
+							"include": "#expr"
+						}
+					]
+				},
+				"~while": {
+					"begin": "(?i)\\bwhile\\b",
+					"beginCaptures": [
+						{
+							"name": "keyword.clu"
+						}
+					],
+					"end": "(?i)\\bend\\b",
+					"endCaptures": [
+						{
+							"name": "keyword.clu"
+						}
+					],
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"begin": "(?i)\\bdo\\b",
+							"beginCaptures": [
+								{
+									"name": "keyword.clu"
+								}
+							],
+							"end": "(?i)(?=end\\b)",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"include": "#statement"
+								}
+							]
+						},
+						{
+							"include": "#expr"
+						}
+					]
+				},
+				"~for": {
+					"begin": "(?i)\\bfor\\b",
+					"beginCaptures": [
+						{
+							"name": "keyword.clu"
+						}
+					],
+					"end": "(?i)\\bend\\b",
+					"endCaptures": [
+						{
+							"name": "keyword.clu"
+						}
+					],
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"begin": "(?i)\\bin\\b",
+							"beginCaptures": [
+								{
+									"name": "keyword.clu"
+								}
+							],
+							"end": "(?i)(?=end\\b)",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"begin": "(?i)\\bdo\\b",
+									"beginCaptures": [
+										{
+											"name": "keyword.clu"
+										}
+									],
+									"end": "(?i)(?=end\\b)",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"include": "#statement"
+										}
+									]
+								},
+								{
+									"include": "#expr"
+								}
+							]
+						},
+						{
+							"begin": "\\b[a-zA-Z_]\\w*\\b",
+							"beginCaptures": [
+								{
+									"name": "variable.clu"
+								}
+							],
+							"end": "(?i)(?=\\bin\\b)|(?!\\s|,|:)",
+							"patterns": [
+								{
+									"begin": ",",
+									"end": "(?<=\\w)",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"include": "#ident.var"
+										}
+									]
+								},
+								{
+									"begin": ":",
+									"beginCaptures": [
+										{
+											"name": "keyword.operator.clu"
+										}
+									],
+									"end": "(?i)(?=,|\\bin\\b)",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"include": "#types"
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				"~capture": {
+					"begin": "\\(",
+					"end": "\\)",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"begin": "\\b[a-zA-Z_]\\w*\\b",
+							"beginCaptures": [
+								{
+									"name": "variable.clu"
+								}
+							],
+							"end": "(?=\\))",
+							"patterns": [
+								{
+									"begin": ":",
+									"beginCaptures": [
+										{
+											"name": "keyword.operator.clu"
+										}
+									],
+									"end": "(?=\\))",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"include": "#types"
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				"~tagcase": {
+					"begin": "(?i)\\btagcase\\b",
+					"beginCaptures": [
+						{
+							"name": "keyword.clu"
+						}
+					],
+					"end": "(?i)\\bend\\b",
+					"endCaptures": [
+						{
+							"name": "keyword.clu"
+						}
+					],
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"begin": "$",
+							"end": "(?i)(?=end\\b)",
+							"patterns": [
+								{
+									"begin": "(?i)\\btag\\b",
+									"beginCaptures": [
+										{
+											"name": "keyword.clu"
+										}
+									],
+									"end": "(?i)(?=(?:tag|others|end)\\b)",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"begin": "\\b[a-zA-Z_]\\w*\\b",
+											"beginCaptures": [
+												{
+													"name": "constant.clu"
+												}
+											],
+											"end": "(?i)(?=(?:tag|others|end)\\b)",
+											"patterns": [
+												{
+													"begin": ",",
+													"end": "(?<=\\w)",
+													"patterns": [
+														{
+															"include": "#comments"
+														},
+														{
+															"include": "#ident.const"
+														}
+													]
+												},
+												{
+													"include": "#~capture"
+												},
+												{
+													"begin": ":",
+													"beginCaptures": [
+														{
+															"name": "keyword.operator.clu"
+														}
+													],
+													"end": "(?i)(?=(?:tag|others|end)\\b)",
+													"patterns": [
+														{
+															"include": "#comments"
+														},
+														{
+															"include": "#statement"
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+								{
+									"begin": "(?i)\\bothers\\b",
+									"beginCaptures": [
+										{
+											"name": "keyword.clu"
+										}
+									],
+									"end": "(?i)(?=end\\b)",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"begin": ":",
+											"beginCaptures": [
+												{
+													"name": "keyword.operator.clu"
+												}
+											],
+											"end": "(?i)(?=end\\b)",
+											"patterns": [
+												{
+													"include": "#comments"
+												},
+												{
+													"include": "#statement"
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{
+							"include": "#expr"
+						}
+					]
+				},
+				"~except": {
+					"begin": "(?i)\\bexcept\\b",
+					"beginCaptures": [
+						{
+							"name": "keyword.clu"
+						}
+					],
+					"end": "(?i)\\bend\\b",
+					"endCaptures": [
+						{
+							"name": "keyword.clu"
+						}
+					],
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"begin": "(?i)\\bwhen\\b",
+							"beginCaptures": [
+								{
+									"name": "keyword.clu"
+								}
+							],
+							"end": "(?i)(?=\\b(?:when|others|end)\\b)",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"begin": "\\b[a-zA-Z_]\\w*\\b",
+									"beginCaptures": [
+										{
+											"name": "entity.name.type.clu"
+										}
+									],
+									"end": "(?i)(?=\\b(?:when|others|end)\\b)",
+									"patterns": [
+										{
+											"begin": ",",
+											"end": "(?<=\\w)",
+											"patterns": [
+												{
+													"include": "#comments"
+												},
+												{
+													"include": "#ident.type"
+												}
+											]
+										},
+										{
+											"begin": "\\(",
+											"end": "\\)",
+											"patterns": [
+												{
+													"include": "#comments"
+												},
+												{
+													"begin": "\\b[a-zA-Z_]\\w*\\b",
+													"beginCaptures": [
+														{
+															"name": "variable.clu"
+														}
+													],
+													"end": "(?i)(?=\\))|(?!\\s|,|:)",
+													"patterns": [
+														{
+															"begin": ",",
+															"end": "(?<=\\w)",
+															"patterns": [
+																{
+																	"include": "#comments"
+																},
+																{
+																	"include": "#ident.var"
+																}
+															]
+														},
+														{
+															"begin": ":",
+															"beginCaptures": [
+																{
+																	"name": "keyword.operator.clu"
+																}
+															],
+															"end": "(?i)(?=,|\\))",
+															"patterns": [
+																{
+																	"include": "#comments"
+																},
+																{
+																	"include": "#types"
+																}
+															]
+														}
+													]
+												},
+												{
+													"begin": "\\*",
+													"beginCaptures": [
+														{
+															"name": "keyword.clu"
+														}
+													],
+													"end": "(?=\\))",
+													"patterns": [
+														{
+															"include": "#comments"
+														}
+													]
+												}
+											]
+										},
+										{
+											"begin": ":",
+											"beginCaptures": [
+												{
+													"name": "keyword.operator.clu"
+												}
+											],
+											"end": "(?i)(?=(?:when|others|end)\\b)",
+											"patterns": [
+												{
+													"include": "#comments"
+												},
+												{
+													"include": "#statement"
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{
+							"begin": "(?i)\\bothers\\b",
+							"beginCaptures": [
+								{
+									"name": "keyword.clu"
+								}
+							],
+							"end": "(?i)(?=end\\b)",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"include": "#~capture"
+								},
+								{
+									"begin": ":",
+									"beginCaptures": [
+										{
+											"name": "keyword.operator.clu"
+										}
+									],
+									"end": "(?i)(?=end\\b)",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"include": "#statement"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			}
+		},
+		"types.proctype": {
+			"begin": "(?i)\\bproctype\\s*(?=\\()",
+			"beginCaptures": [
+				{
+					"name": "keyword.clu"
+				}
+			],
+			"end": "(?!\\(|(?<!\\))\\))",
+			"patterns": [
+				{
+					"begin": "\\)",
+					"end": "(?i)(?!\\s|$|(?:returns|signals)\\b)",
+					"patterns": [
+						{
+							"include": "#proc.returns"
+						},
+						{
+							"include": "#proc.signals"
+						}
+					]
+				},
+				{
+					"begin": "(?<=\\bproctype\\s*)\\(",
+					"end": "(?=\\))",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#comma"
+						},
+						{
+							"include": "#types"
+						}
+					]
+				}
+			]
+		},
+		"types.itertype": {
+			"begin": "(?i)\\bitertype\\s*(?=\\()",
+			"beginCaptures": [
+				{
+					"name": "keyword.clu"
+				}
+			],
+			"end": "(?!\\(|\\))",
+			"patterns": [
+				{
+					"begin": "\\)",
+					"end": "(?i)(?!\\s|$|(?:yields|signals)\\b)",
+					"patterns": [
+						{
+							"include": "#iter.yields"
+						},
+						{
+							"include": "#proc.signals"
+						}
+					]
+				},
+				{
+					"begin": "(?<=\\bitertype\\s*)\\(",
+					"end": "(?=\\))",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#comma"
+						},
+						{
+							"include": "#types"
+						}
+					]
+				}
+			]
+		},
+		"types": {
+			"patterns": [
+				{
+					"begin": "(?i)\\b(oneof|variant|record|struct)\\s*(\\[)",
+					"beginCaptures": {
+						"1": {
+							"name": "keyword.clu"
+						}
+					},
+					"end": "\\]",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"begin": "\\b[a-zA-Z_]\\w*\\b",
+							"beginCaptures": [
+								{
+									"name": "variable.member.clu"
+								}
+							],
+							"end": "(?=\\])",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"include": "#comma"
+								},
+								{
+									"match": "\\b[a-zA-Z_]\\w*\\b",
+									"name": "variable.member.clu"
+								},
+								{
+									"begin": ":",
+									"beginCaptures": [
+										{
+											"name": "keyword.operator.clu"
+										}
+									],
+									"end": ",|(?=\\])",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"include": "#types"
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"begin": "\\b([a-zA-Z_]\\w*)\\s*(\\[)",
+					"beginCaptures": {
+						"1": {
+							"patterns": [
+								{
+									"match": "(?i)\\b(array|sequence)\\b",
+									"name": "keyword.clu"
+								},
+								{
+									"match": "\\w+",
+									"name": "entity.name.type.clu"
+								}
+							]
+						}
+					},
+					"end": "\\]",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#comma"
+						},
+						{
+							"include": "#types"
+						}
+					]
+				},
+				{
+					"include": "#types.proctype"
+				},
+				{
+					"include": "#types.itertype"
+				},
+				{
+					"match": "(?i)\\b(any|bool|char|cvt|int|null|real|rep|string|type)\\b",
+					"name": "keyword.clu"
+				},
+				{
+					"include": "#ident.type"
+				}
+			]
+		},
+		"type-params": {
+			"begin": "\\[",
+			"end": "\\]",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"begin": "\\b[a-zA-Z_]\\w*\\b",
+					"beginCaptures": [
+						{
+							"name": "entity.name.type.clu"
+						}
+					],
+					"end": "(?=\\])",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#comma"
+						},
+						{
+							"include": "#ident.type"
+						},
+						{
+							"begin": ":",
+							"beginCaptures": [
+								{
+									"name": "keyword.operator.clu"
+								}
+							],
+							"end": "(?=[,\\]])",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"include": "#types"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		"typeset": {
+			"begin": "\\{",
+			"end": "\\}",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"begin": "\\b[a-zA-Z_]\\w*\\b",
+					"beginCaptures": [
+						{
+							"name": "entity.name.type"
+						}
+					],
+					"end": "(?=\\})",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"begin": "\\|",
+							"beginCaptures": [
+								{
+									"name": "keyword.operator.clu"
+								}
+							],
+							"end": "(?=\\})",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"begin": "\\b[a-zA-Z_]\\w*\\b",
+									"beginCaptures": [
+										{
+											"name": "entity.name.type"
+										}
+									],
+									"end": "(?=\\})",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"begin": "(?i)\\bhas\\b",
+											"beginCaptures": [
+												{
+													"name": "keyword.clu"
+												}
+											],
+											"end": "(?=\\})",
+											"patterns": [
+												{
+													"include": "#comments"
+												},
+												{
+													"begin": "\\b[a-zA-Z_]\\w*\\b",
+													"beginCaptures": [
+														{
+															"name": "entity.name.function.clu"
+														}
+													],
+													"end": "(?=\\})",
+													"patterns": [
+														{
+															"include": "#comments"
+														},
+														{
+															"include": "#comma"
+														},
+														{
+															"include": "#ident.proc"
+														},
+														{
+															"begin": ":",
+															"beginCaptures": [
+																{
+																	"name": "keyword.operator.clu"
+																}
+															],
+															"end": "(?=[,}])",
+															"patterns": [
+																{
+																	"include": "#comments"
+																},
+																{
+																	"include": "#types.proctype"
+																},
+																{
+																	"include": "#types.itertype"
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		"equate": {
+			"patterns": [
+				{
+					"begin": "(?i)\\b(rep)\\s*(=)",
+					"beginCaptures": {
+						"1": {
+							"name": "keyword.clu"
+						},
+						"2": {
+							"name": "keyword.operator.clu"
+						}
+					},
+					"end": "(?=$|[;%])",
+					"patterns": [
+						{
+							"include": "#types"
+						}
+					]
+				},
+				{
+					"begin": "\\b([a-zA-Z_]\\w*)\\s*(=)\\s*(?=\\{)",
+					"beginCaptures": {
+						"1": {
+							"name": "entity.name.type.clu"
+						},
+						"2": {
+							"name": "keyword.operator.clu"
+						}
+					},
+					"end": "(?<=\\})",
+					"patterns": [
+						{
+							"include": "#typeset"
+						}
+					]
+				},
+				{
+					"begin": "\\b([a-zA-Z_]\\w*)\\s*(=)\\s*(?=(?i)(?:proc|iter)type\\b)",
+					"beginCaptures": {
+						"1": {
+							"name": "entity.name.type.clu"
+						},
+						"2": {
+							"name": "keyword.operator.clu"
+						}
+					},
+					"end": "(?<=\\)\\s*|^\\s*)|(?=$|[;%])",
+					"patterns": [
+						{
+							"include": "#types.proctype"
+						},
+						{
+							"include": "#types.itertype"
+						}
+					]
+				},
+				{
+					"begin": "\\b([a-zA-Z_]\\w*)\\s*(=)\\s*(?=(?i)pathname\\b)",
+					"beginCaptures": {
+						"1": {
+							"name": "entity.name.type.clu"
+						},
+						"2": {
+							"name": "keyword.operator.clu"
+						}
+					},
+					"end": "(?<=\")",
+					"patterns": [
+						{
+							"begin": "(?i)\\bpathname\\b",
+							"beginCaptures": [
+								{
+									"name": "keyword.clu"
+								}
+							],
+							"end": "(?<=\")",
+							"patterns": [
+								{
+									"include": "#basic-expr.string"
+								}
+							]
+						}
+					]
+				},
+				{
+					"begin": "\\b([a-zA-Z_]\\w*)\\s*(=)\\s*(?!(?i)(?:cluster|proc|iter)\\b)(?=[^%]*?(?:[$\\.~&*\\-+=|<>/'\"]|\\b(?:\\d|(?:(?i)force|up|down|true|false|nil|cand|cor)\\b)|\\]\\s*\\())",
+					"beginCaptures": {
+						"1": {
+							"name": "constant.clu"
+						},
+						"2": {
+							"name": "keyword.operator.clu"
+						}
+					},
+					"end": "(?=$|[;%])",
+					"patterns": [
+						{
+							"include": "#expr"
+						}
+					]
+				},
+				{
+					"begin": "\\b([a-zA-Z_]\\w*)\\s*(=)\\s*(?!(?i)(?:cluster|proc|iter)\\b)",
+					"beginCaptures": {
+						"1": {
+							"name": "entity.name.type.clu"
+						},
+						"2": {
+							"name": "keyword.operator.clu"
+						}
+					},
+					"end": "(?=$|[;%])",
+					"patterns": [
+						{
+							"include": "#types"
+						}
+					]
+				}
+			]
+		},
+		"proc.returns": {
+			"begin": "(?i)\\b(returns)\\s*(\\()",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.clu"
+				}
+			},
+			"end": "\\)",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#comma"
+				},
+				{
+					"include": "#types"
+				}
+			]
+		},
+		"iter.yields": {
+			"begin": "(?i)\\b(yields)\\s*(\\()",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.clu"
+				}
+			},
+			"end": "\\)",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#comma"
+				},
+				{
+					"include": "#types"
+				}
+			]
+		},
+		"proc.signals": {
+			"begin": "(?i)\\b(signals)\\s*(\\()",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.clu"
+				}
+			},
+			"end": "\\)",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#comma"
+				},
+				{
+					"include": "#types"
+				},
+				{
+					"begin": "(?<=\\b[a-zA-Z_]\\w*\\s*)\\(",
+					"end": "\\)",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#comma"
+						},
+						{
+							"include": "#types"
+						}
+					]
+				}
+			]
+		},
+		"where-clause.constraint": {
+			"begin": "\\b([a-zA-Z_]\\w*)\\b",
+			"beginCaptures": [
+				{
+					"name": "entity.name.type.clu"
+				}
+			],
+			"end": "(?i)(?<!(?:(?-i)\\b\\1\\s*)|\\bin\\s*|\\bhas\\s*)(?!\\s|$|%|(?:in|has)\\b)",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"begin": "(?i)\\bin\\b",
+					"beginCaptures": [
+						{
+							"name": "keyword.clu"
+						}
+					],
+					"end": "(?i)(?<!\\bin\\s*)(?!\\s|$|%|\\{)",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#ident.type"
+						},
+						{
+							"include": "#typeset"
+						}
+					]
+				},
+				{
+					"begin": "(?i)\\bhas\\b",
+					"beginCaptures": [
+						{
+							"name": "keyword.clu"
+						}
+					],
+					"end": "(?i)(?<!\\bhas\\s*|,\\s*|:\\s*)(?!\\s|$|%|,|:)",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"begin": "\\b[a-zA-Z_]\\w*\\b",
+							"beginCaptures": [
+								{
+									"name": "entity.name.function.clu"
+								}
+							],
+							"end": "(?<!:\\s*)(?!\\s|$|%|,|:)",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"begin": ",(?!\\s*$)",
+									"end": "(?<=\\w)",
+									"patterns": [
+										{
+											"include": "#ident.proc"
+										}
+									]
+								},
+								{
+									"begin": ":",
+									"beginCaptures": [
+										{
+											"name": "keyword.operator.clu"
+										}
+									],
+									"end": "(?i)(?<!:\\s*)(?!\\s|$|%|(?:proc|iter)type\\b)",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"include": "#types.proctype"
+										},
+										{
+											"include": "#types.itertype"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		"where-clause": {
+			"begin": "(?i)\\bwhere\\b(?!,)",
+			"beginCaptures": [
+				{
+					"name": "keyword.clu"
+				}
+			],
+			"end": "(?i)(?<!\\bwhere\\s*|,\\s*|\\bin\\s*|\\bhas\\s*)(?!\\s|$|%|,|[a-zA-Z_]\\w*\\s+(?=has\\b|in\\b))",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"begin": ",",
+					"end": "(?i)(?<!,\\s*|\\bin\\s*|\\bhas\\s*)(?!\\s|$|%|,|in\\b|has\\b)",
+					"patterns": [
+						{
+							"include": "#where-clause.constraint"
+						}
+					]
+				},
+				{
+					"include": "#where-clause.constraint"
+				}
+			]
+		},
+		"decl.cluster": {
+			"patterns": [
+				{
+					"begin": "\\b([a-zA-Z_]\\w*)\\s*(=)\\s*((?i)cluster)\\b",
+					"beginCaptures": {
+						"1": {
+							"name": "entity.name.type.clu"
+						},
+						"2": {
+							"name": "keyword.operator.clu"
+						},
+						"3": {
+							"name": "keyword.clu"
+						}
+					},
+					"end": "\\b((?i)end)\\s+(\\1)\\b",
+					"endCaptures": {
+						"1": {
+							"name": "keyword.clu"
+						},
+						"2": {
+							"name": "entity.name.type.clu"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#type-params"
+						},
+						{
+							"begin": "(?i)\\bis\\b",
+							"beginCaptures": [
+								{
+									"name": "keyword.clu"
+								}
+							],
+							"end": "(?i)(?=end\\s+\\1)",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"begin": "\\b[a-zA-Z_]\\w*\\b",
+									"beginCaptures": [
+										{
+											"name": "entity.name.function.clu"
+										}
+									],
+									"end": "(?i)(?=end\\s+[a-zA-Z_]\\w*\\s*(?:[%;]|$))",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"begin": ",",
+											"end": "(?<=\\w)(?<!%[^%]+)",
+											"patterns": [
+												{
+													"include": "#comments"
+												},
+												{
+													"include": "#ident.proc"
+												}
+											]
+										},
+										{
+											"include": "#where-clause"
+										},
+										{
+											"begin": "(?i)(?!\\s|$|%|,)",
+											"end": "(?i)(?=end\\s+[a-zA-Z_]\\w*\\s*(?:[%;]|$))",
+											"patterns": [
+												{
+													"include": "#comments"
+												},
+												{
+													"include": "#decl.proc"
+												},
+												{
+													"include": "#decl.iter"
+												},
+												{
+													"include": "#decl.own"
+												},
+												{
+													"include": "#equate"
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		"decl.proc": {
+			"patterns": [
+				{
+					"begin": "\\b([a-zA-Z_]\\w*)\\s*(=)\\s*((?i)proc)\\b",
+					"beginCaptures": {
+						"1": {
+							"name": "entity.name.function.clu"
+						},
+						"2": {
+							"name": "keyword.operator.clu"
+						},
+						"3": {
+							"name": "keyword.clu"
+						}
+					},
+					"end": "\\b((?i)end)\\s+(\\1)\\b",
+					"endCaptures": {
+						"1": {
+							"name": "keyword.clu"
+						},
+						"2": {
+							"name": "entity.name.function.clu"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#~params"
+						},
+						{
+							"include": "#~type-params"
+						}
+					]
+				}
+			],
+			"repository": {
+				"~type-params": {
+					"begin": "\\[",
+					"end": "(?i)(?=end\\s+[a-zA-Z_]\\w*\\s*(?:[%;]|$))",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"begin": "\\b[a-zA-Z_]\\w*\\b",
+							"beginCaptures": [
+								{
+									"name": "entity.name.type.clu"
+								}
+							],
+							"end": "(?=\\])",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"include": "#comma"
+								},
+								{
+									"include": "#ident.type"
+								},
+								{
+									"begin": ":",
+									"beginCaptures": [
+										{
+											"name": "keyword.operator.clu"
+										}
+									],
+									"end": "(?=[,\\]])",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"include": "#types"
+										}
+									]
+								}
+							]
+						},
+						{
+							"begin": "\\]",
+							"end": "(?i)(?=end\\s+[a-zA-Z_]\\w*\\s*(?:[%;]|$))",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"include": "#~params"
+								}
+							]
+						}
+					]
+				},
+				"~params": {
+					"begin": "\\(",
+					"end": "(?i)(?=end\\s+[a-zA-Z_]\\w*\\s*(?:[%;]|$))",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"begin": "\\b[a-zA-Z_]\\w*\\b",
+							"beginCaptures": [
+								{
+									"name": "variable.parameter.clu"
+								}
+							],
+							"end": "(?=\\))",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"include": "#comma"
+								},
+								{
+									"match": "\\b[a-zA-Z_]\\w*\\b",
+									"name": "variable.parameter.clu"
+								},
+								{
+									"begin": ":",
+									"beginCaptures": [
+										{
+											"name": "keyword.operator.clu"
+										}
+									],
+									"end": "(?=[,)])",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"include": "#types"
+										}
+									]
+								}
+							]
+						},
+						{
+							"begin": "\\)",
+							"end": "(?i)(?=end\\s+[a-zA-Z_]\\w*\\s*(?:[%;]|$))",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"include": "#proc.returns"
+								},
+								{
+									"include": "#proc.signals"
+								},
+								{
+									"include": "#where-clause"
+								},
+								{
+									"begin": "(?!\\s|$|%)",
+									"end": "(?i)(?=end\\s+[a-zA-Z_]\\w*\\s*(?:[%;]|$))",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"include": "#statement"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			}
+		},
+		"decl.iter": {
+			"patterns": [
+				{
+					"begin": "\\b([a-zA-Z_]\\w*)\\s*(=)\\s*((?i)iter)\\b",
+					"beginCaptures": {
+						"1": {
+							"name": "entity.name.function.clu"
+						},
+						"2": {
+							"name": "keyword.operator.clu"
+						},
+						"3": {
+							"name": "keyword.clu"
+						}
+					},
+					"end": "\\b((?i)end)\\s+(\\1)\\b",
+					"endCaptures": {
+						"1": {
+							"name": "keyword.clu"
+						},
+						"2": {
+							"name": "entity.name.function.clu"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#~params"
+						},
+						{
+							"include": "#~type-params"
+						}
+					]
+				}
+			],
+			"repository": {
+				"~type-params": {
+					"begin": "\\[",
+					"end": "(?i)(?=end\\s+[a-zA-Z_]\\w*\\s*(?:[%;]|$))",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"begin": "\\b[a-zA-Z_]\\w*\\b",
+							"beginCaptures": [
+								{
+									"name": "entity.name.type.clu"
+								}
+							],
+							"end": "(?=\\])",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"include": "#comma"
+								},
+								{
+									"include": "#ident.type"
+								},
+								{
+									"begin": ":",
+									"beginCaptures": [
+										{
+											"name": "keyword.operator.clu"
+										}
+									],
+									"end": "(?=[,\\]])",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"include": "#types"
+										}
+									]
+								}
+							]
+						},
+						{
+							"begin": "\\]",
+							"end": "(?i)(?=end\\s+[a-zA-Z_]\\w*\\s*(?:[%;]|$))",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"include": "#~params"
+								}
+							]
+						}
+					]
+				},
+				"~params": {
+					"begin": "\\(",
+					"end": "(?i)(?=end\\s+[a-zA-Z_]\\w*\\s*(?:[%;]|$))",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"begin": "\\b[a-zA-Z_]\\w*\\b",
+							"beginCaptures": [
+								{
+									"name": "variable.parameter.clu"
+								}
+							],
+							"end": "(?=\\))",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"include": "#comma"
+								},
+								{
+									"match": "\\b[a-zA-Z_]\\w*\\b",
+									"name": "variable.parameter.clu"
+								},
+								{
+									"begin": ":",
+									"beginCaptures": [
+										{
+											"name": "keyword.operator.clu"
+										}
+									],
+									"end": "(?=[,)])",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"include": "#types"
+										}
+									]
+								}
+							]
+						},
+						{
+							"begin": "\\)",
+							"end": "(?i)(?=end\\s+[a-zA-Z_]\\w*\\s*(?:[%;]|$))",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"include": "#iter.yields"
+								},
+								{
+									"include": "#proc.signals"
+								},
+								{
+									"include": "#where-clause"
+								},
+								{
+									"begin": "(?!\\s|$|%)",
+									"end": "(?i)(?=end\\s+[a-zA-Z_]\\w*\\s*(?:[%;]|$))",
+									"patterns": [
+										{
+											"include": "#comments"
+										},
+										{
+											"include": "#statement"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			}
+		},
+		"decl.own": {
+			"begin": "(?i)\\bown\\b",
+			"beginCaptures": [
+				{
+					"name": "keyword.clu"
+				}
+			],
+			"end": "(?=$|;)",
+			"patterns": [
+				{
+					"begin": ":=|:=\\s*$",
+					"beginCaptures": [
+						{
+							"name": "keyword.operator.clu"
+						}
+					],
+					"end": "(?i)(?<!:=\\s*|[+\\-*/&|~=<>]+\\s*|\\bcand\\s*|\\bcor\\s*)$",
+					"applyEndPatternLast": true,
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#expr"
+						}
+					]
+				},
+				{
+					"include": "#statement.var-decl"
+				}
+			]
+		},
+		"top-level": {
+			"patterns": [
+				{
+					"include": "#decl.cluster"
+				},
+				{
+					"include": "#decl.proc"
+				},
+				{
+					"include": "#decl.iter"
+				},
+				{
+					"include": "#equate"
+				},
+				{
+					"match": "#\\s*(extend|normal|signal)\\b",
+					"name": "keyword.clu"
+				},
+				{
+					"begin": "#\\s*include\\b",
+					"beginCaptures": [
+						{
+							"name": "keyword.clu"
+						}
+					],
+					"end": "(?<=\")",
+					"patterns": [
+						{
+							"include": "#basic-expr.string"
+						}
+					]
+				}
+			]
+		}
+	}
+}
